@@ -1,15 +1,23 @@
 version: '3.9'
 
 services:
-  app:
+  fastapi:
     image: uvicorn-gunicorn-fastapi:latest
     container_name: "fastapi_container"
     build:
       context: ..
-      dockerfile: docker_pro/Dockerfile
-    ports:
-      - "8088:80"
+      dockerfile: docker_pro/fastapi.Dockerfile
     environment:
       - UVICORN_CMD="uvicorn main:app --host 0.0.0.0 --port 80 --workers 4"
       - GUNICORN_CMD="gunicorn -k uvicorn.workers.UvicornWorker -w 4 main:app -b 0.0.0.0:80"
+    restart: always
+    depends_on:
+      - nginx
+
+  nginx:
+    build:
+      context: ..
+      dockerfile: docker_pro/nginx.Dockerfile
+    ports:
+      - "8000:80"
     restart: always
