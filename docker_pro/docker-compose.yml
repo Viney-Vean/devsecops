@@ -13,17 +13,21 @@ services:
       - UVICORN_CMD="uvicorn main:app --host 0.0.0.0 --port 80 --workers 4"
       - GUNICORN_CMD="gunicorn -k uvicorn.workers.UvicornWorker -w 4 main:app -b 0.0.0.0:80"
     restart: always
-    depends_on:
-      - nginx
 
   postgres:
-    image: postgres:latest
+    build:
+      context: ..
+      dockerfile: docker_pro/postgres.Dockerfile
     container_name: postgres_container
     restart: always
+    ports:
+      - "5433:5432"
     environment:
       - POSTGRES_DB=postgres
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=admin
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   pgadmin:
     build:
@@ -33,15 +37,31 @@ services:
     restart: always
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=pgpassword
+      - PGADMIN_DEFAULT_PASSWORD=admin
       - PGADMIN_LISTEN_PORT=80
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
 
   nginx:
     build:
       context: ..
       dockerfile: docker_pro/nginx.Dockerfile
+    container_name: nginx_container
     ports:
       - "8000:80"
       - "5050:5050"
-      - "5432:5432"
+      - "5454:5432"
     restart: always
+    volumes:
+      - nginx_data:/etc/nginx
+    depends_on:
+      - fastapi
+      - postgres
+      - pgadmin
+
+volumes:
+  postgres_data:
+  pgadmin_data:
+  nginx_data:
+
+
