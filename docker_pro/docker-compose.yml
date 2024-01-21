@@ -12,14 +12,14 @@ services:
       - ASGI_SERVER=uvicorn
       - UVICORN_CMD="uvicorn main:app --host 0.0.0.0 --port 80 --workers 4"
       - GUNICORN_CMD="gunicorn -k uvicorn.workers.UvicornWorker -w 4 main:app -b 0.0.0.0:80"
-    restart: always
+#    restart: always
 
   postgres:
     build:
       context: ..
       dockerfile: docker_pro/postgres.Dockerfile
     container_name: postgres_container
-    restart: always
+#    restart: always
     ports:
       - "5433:5432"
     environment:
@@ -34,7 +34,7 @@ services:
       context: ..
       dockerfile: docker_pro/pgAdmin.Dockerfile
     container_name: pgadmin_container
-    restart: always
+#    restart: always
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@admin.com
       - PGADMIN_DEFAULT_PASSWORD=admin
@@ -47,7 +47,7 @@ services:
       context: ..
       dockerfile: docker_pro/jenkins.Dockerfile
     container_name: jenkins_container
-    restart: on-failure
+#    restart: on-failure
     volumes:
       - jenkins_data:/var/jenkins_home
       - jenkins_docker_certs:/certs/client:ro
@@ -57,20 +57,17 @@ services:
       context: ..
       dockerfile: docker_pro/gitlab.Dockerfile
     container_name: gitlab_container
-    restart: always
-    environment:
-      GITLAB_OMNIBUS_CONFIG: |
-        external_url 'https://gitlab.example.com'
-        # Add any other gitlab.rb configuration here, each on its own line
+    hostname: gitlab.example.com
     ports:
-      - '8090:80'
-      - '443:443'
-      - '22:22'
+      - "443:443"
+      - "8099:80"
+      - "22:22"
+#    restart: on-failure
     volumes:
       - gitlab_home_config:/etc/gitlab
       - gitlab_home_logs:/var/log/gitlab
       - gitlab_home_data:/var/opt/gitlab
-    shm_size: '256m'
+    shm_size: 256m
 
   nginx:
     build:
