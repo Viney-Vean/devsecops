@@ -42,6 +42,36 @@ services:
     volumes:
       - pgadmin_data:/var/lib/pgadmin
 
+  jenkins:
+    build:
+      context: ..
+      dockerfile: docker_pro/jenkins.Dockerfile
+    container_name: jenkins_container
+    restart: on-failure
+    volumes:
+      - jenkins_data:/var/jenkins_home
+      - jenkins_docker_certs:/certs/client:ro
+
+  gitlab:
+    build:
+      context: ..
+      dockerfile: docker_pro/gitlab.Dockerfile
+    container_name: gitlab_container
+    restart: always
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url 'https://gitlab.example.com'
+        # Add any other gitlab.rb configuration here, each on its own line
+    ports:
+      - '8090:80'
+      - '443:443'
+      - '22:22'
+    volumes:
+      - gitlab_home_config:/etc/gitlab
+      - gitlab_home_logs:/var/log/gitlab
+      - gitlab_home_data:/var/opt/gitlab
+    shm_size: '256m'
+
   nginx:
     build:
       context: ..
@@ -49,19 +79,26 @@ services:
     container_name: nginx_container
     ports:
       - "8000:80"
-      - "5050:5050"
       - "5454:5432"
+      - "5050:5050"
+      - "8080:8080"
+      - "50000:50000"
     restart: always
-    volumes:
-      - nginx_data:/etc/nginx
     depends_on:
       - fastapi
       - postgres
       - pgadmin
+      - jenkins
 
 volumes:
   postgres_data:
   pgadmin_data:
   nginx_data:
+  jenkins_data:
+  jenkins_docker_certs:
+  gitlab_home_config:
+  gitlab_home_data:
+  gitlab_home_logs:
 
-
+networks:
+  jenkins:

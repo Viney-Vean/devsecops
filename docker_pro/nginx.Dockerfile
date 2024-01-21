@@ -7,7 +7,7 @@ LABEL maintainer="Viney Vean <viney.vean@gmail.com>"
 COPY ../requirements/nginx/nginx.conf /etc/nginx/nginx.conf
 COPY ../requirements/nginx/fastapi.conf /etc/nginx/conf.d/fastapi.conf
 COPY ../requirements/nginx/pgadmin.conf /etc/nginx/conf.d/pgadmin.conf
-#COPY ../requirements/nginx/postgres.conf /etc/nginx/conf.d/postgres.conf
+COPY ../requirements/nginx/jenkins.conf /etc/nginx/conf.d/jenkins.conf
 
 # Remove the default Nginx configuration file
 RUN rm /etc/nginx/conf.d/default.conf
