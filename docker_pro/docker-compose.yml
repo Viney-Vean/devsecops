@@ -19,7 +19,7 @@ services:
       context: ..
       dockerfile: docker_pro/postgres.Dockerfile
     container_name: postgres_container
-#    restart: always
+    restart: always
     ports:
       - "5433:5432"
     environment:
@@ -58,6 +58,8 @@ services:
       dockerfile: docker_pro/gitlab.Dockerfile
     container_name: gitlab_container
     hostname: gitlab.example.com
+    environment:
+      - GITLAB_ROOT_PASSWORD="P@ssw0rd"
     ports:
       - "443:443"
       - "8099:80"
@@ -81,11 +83,11 @@ services:
       - "8080:8080"
       - "50000:50000"
     restart: always
-    depends_on:
-      - fastapi
-      - postgres
-      - pgadmin
-      - jenkins
+#    depends_on:
+#      - fastapi
+#      - postgres
+#      - pgadmin
+#      - jenkins
 
 volumes:
   postgres_data:
