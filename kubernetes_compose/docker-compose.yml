@@ -27,6 +27,7 @@ services:
       - "2223:22"  # Map host port 2222 to container port 22 (SSH)
     volumes:
       - ./master1/ssh:/root/.ssh/
+      - ./kubespray:/opt/kubespray
 
 
   ubuntu_master3:
